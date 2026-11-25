@@ -43,3 +43,20 @@ SELECT
     session_id,
     progress_seconds
 FROM movie_events_queue;
+
+CREATE TABLE IF NOT EXISTS agg_daily_metrics (
+    metric_date Date,
+    metric_name String,
+    dimension String DEFAULT '',
+    metric_value Float64,
+    computed_at DateTime
+) ENGINE = ReplacingMergeTree(computed_at)
+ORDER BY (metric_date, metric_name, dimension);
+
+CREATE TABLE IF NOT EXISTS agg_top_movies (
+    metric_date Date,
+    rank        UInt32,
+    movie_id    String,
+    views       UInt64,
+    computed_at DateTime('UTC')
+) ENGINE = MergeTree ORDER BY (metric_date, rank);
